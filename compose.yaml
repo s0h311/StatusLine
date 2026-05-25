@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+    environment:
+      DATABASE_CONNECTION_STRING: ${DATABASE_CONNECTION_STRING}
+      ENVIRONMENT: ${ENVIRONMENT}
+      SERVER_HOST: ${SERVER_HOST}
+      VITE_BASE_URL: ${VITE_BASE_URL}
+    depends_on:
+      postgres:
+        condition: service_started
+    networks:
+      - rs-service-network
+  postgres:
+    image: postgres:18-alpine3.23
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - rs-service_postgres_data:/var/lib/postgresql/data
+    networks:
+      - rs-service-network
+
+volumes:
+  rs-service_postgres_data:
+networks:
+  rs-service-network:

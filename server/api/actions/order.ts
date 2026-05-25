@@ -34,6 +34,23 @@ ${statusUrl}
 ${EMAIL_FOOTER}`,
     })
   },
+  sendStatusUpdateEmail: async ({ customerEmail, customerName, referenceCode, statusName }) => {
+    const baseUrl = getBaseUrl()
+    const statusUrl = `${baseUrl}/status?code=${referenceCode}`
+
+    await sendMail({
+      recipients: [customerEmail],
+      subject: `Ihr Status wurde aktualisiert – ${referenceCode}`,
+      text: `Hallo ${customerName},
+
+Ihr Auftrag (${referenceCode}) hat einen neuen Status: ${statusName}
+
+Den aktuellen Status können Sie jederzeit hier einsehen:
+${statusUrl}
+
+${EMAIL_FOOTER}`,
+    })
+  },
 })
 
 const authMiddleware = createMiddleware({ type: 'request' }).server(async ({ request, next }) => {
@@ -55,3 +72,13 @@ export const createOrderAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator((data: unknown) => data as { customerName: string; customerEmail: string; note: string })
   .handler(({ context, data }) => orderModule.createOrder(context.userId, data))
+
+export const advanceOrderAction = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator((data: unknown) => data as { orderId: string })
+  .handler(({ context, data }) => orderModule.advanceOrder(context.userId, data.orderId))
+
+export const revertOrderAction = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator((data: unknown) => data as { orderId: string })
+  .handler(({ context, data }) => orderModule.revertOrder(context.userId, data.orderId))

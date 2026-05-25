@@ -22,15 +22,23 @@ export type OrderStore = {
   existsByReferenceCode(code: string): Promise<boolean>
   getByUserId(userId: string): Promise<Order[]>
   getByReferenceCode(code: string): Promise<Order | null>
+  getById(id: string): Promise<Order | null>
+  updateCurrentStatus(id: string, currentStatusId: string): Promise<Order>
 }
 
 export type OrderDeps = {
   orderStore: OrderStore
-  getStatuses: (userId: string) => Promise<{ id: string; position: number; name: string }[]>
+  getStatuses: (userId: string) => Promise<{ id: string; position: number; name: string; notify: boolean }[]>
   sendOrderCreatedEmail: (params: {
     customerEmail: string
     customerName: string
     referenceCode: string
+  }) => Promise<void>
+  sendStatusUpdateEmail: (params: {
+    customerEmail: string
+    customerName: string
+    referenceCode: string
+    statusName: string
   }) => Promise<void>
   generateReferenceCode?: () => string
 }
@@ -104,6 +112,64 @@ export function createOrderModule(deps: OrderDeps) {
         currentStatusName: current?.name ?? 'Unbekannt',
         currentPosition: current?.position ?? -1,
       }
+    },
+
+    async advanceOrder(userId: string, orderId: string): Promise<Order> {
+      const order = await deps.orderStore.getById(orderId)
+      if (!order || order.userId !== userId) throw new Error('Auftrag nicht gefunden')
+
+      const statuses = await deps.getStatuses(userId)
+      const sorted = statuses.toSorted((a, b) => a.position - b.position)
+      const currentIndex = sorted.findIndex((s) => s.id === order.currentStatusId)
+
+      let nextStatus: (typeof sorted)[number] | undefined
+      if (currentIndex === -1) {
+        nextStatus = sorted[0]
+      } else if (currentIndex >= sorted.length - 1) {
+        throw new Error('Bereits am letzten Status')
+      } else {
+        nextStatus = sorted[currentIndex + 1]
+      }
+      if (!nextStatus) throw new Error('Keine Status vorhanden')
+
+      const updated = await deps.orderStore.updateCurrentStatus(orderId, nextStatus.id)
+
+      if (nextStatus.notify) {
+        await deps.sendStatusUpdateEmail({
+          customerEmail: order.customerEmail,
+          customerName: order.customerName,
+          referenceCode: order.referenceCode,
+          statusName: nextStatus.name,
+        })
+      }
+
+      return updated
+    },
+
+    async revertOrder(userId: string, orderId: string): Promise<Order> {
+      const order = await deps.orderStore.getById(orderId)
+      if (!order || order.userId !== userId) throw new Error('Auftrag nicht gefunden')
+
+      const statuses = await deps.getStatuses(userId)
+      const sorted = statuses.toSorted((a, b) => a.position - b.position)
+      const currentIndex = sorted.findIndex((s) => s.id === order.currentStatusId)
+
+      if (currentIndex <= 0) throw new Error('Bereits am ersten Status')
+
+      const prevStatus = sorted[currentIndex - 1]
+      if (!prevStatus) throw new Error('Bereits am ersten Status')
+      const updated = await deps.orderStore.updateCurrentStatus(orderId, prevStatus.id)
+
+      if (prevStatus.notify) {
+        await deps.sendStatusUpdateEmail({
+          customerEmail: order.customerEmail,
+          customerName: order.customerName,
+          referenceCode: order.referenceCode,
+          statusName: prevStatus.name,
+        })
+      }
+
+      return updated
     },
 
     async getOrders(userId: string): Promise<OrderWithStatus[]> {

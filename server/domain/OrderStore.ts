@@ -23,5 +23,15 @@ export function createDrizzleOrderStore(db: NodePgDatabase): OrderStore {
       const rows = await db.select().from(order).where(eq(order.referenceCode, code))
       return rows[0] ?? null
     },
+
+    async getById(id) {
+      const rows = await db.select().from(order).where(eq(order.id, id))
+      return rows[0] ?? null
+    },
+
+    async updateCurrentStatus(id, currentStatusId) {
+      const rows = await db.update(order).set({ currentStatusId }).where(eq(order.id, id)).returning()
+      return rows[0] as (typeof rows)[number]
+    },
   }
 }

@@ -20,6 +20,15 @@ function createInMemoryOrderStore(): OrderStore {
     async getByReferenceCode(code) {
       return orders.find((o) => o.referenceCode === code) ?? null
     },
+    async getById(id) {
+      return orders.find((o) => o.id === id) ?? null
+    },
+    async updateCurrentStatus(id, currentStatusId) {
+      const order = orders.find((o) => o.id === id)
+      if (!order) throw new Error('Order not found')
+      order.currentStatusId = currentStatusId
+      return order
+    },
   }
 }
 
@@ -27,10 +36,11 @@ function createTestDeps(overrides: Partial<OrderDeps> = {}): OrderDeps {
   return {
     orderStore: createInMemoryOrderStore(),
     getStatuses: async () => [
-      { id: 'status-1', position: 0, name: 'Nicht begonnen' },
-      { id: 'status-2', position: 1, name: 'Fertig' },
+      { id: 'status-1', position: 0, name: 'Nicht begonnen', notify: false },
+      { id: 'status-2', position: 1, name: 'Fertig', notify: false },
     ],
     sendOrderCreatedEmail: vi.fn<OrderDeps['sendOrderCreatedEmail']>().mockResolvedValue(undefined),
+    sendStatusUpdateEmail: vi.fn<OrderDeps['sendStatusUpdateEmail']>().mockResolvedValue(undefined),
     generateReferenceCode: () => 'ABC123',
     ...overrides,
   }
@@ -57,9 +67,9 @@ describe('Order', () => {
     test('order is assigned to the first status in the sequence', async () => {
       const deps = createTestDeps({
         getStatuses: async () => [
-          { id: 'second', position: 1, name: 'In Bearbeitung' },
-          { id: 'first', position: 0, name: 'Nicht begonnen' },
-          { id: 'third', position: 2, name: 'Fertig' },
+          { id: 'second', position: 1, name: 'In Bearbeitung', notify: false },
+          { id: 'first', position: 0, name: 'Nicht begonnen', notify: false },
+          { id: 'third', position: 2, name: 'Fertig', notify: false },
         ],
       })
       const mod = createOrderModule(deps)
@@ -131,6 +141,12 @@ describe('Order', () => {
           },
           async getByReferenceCode() {
             return null
+          },
+          async getById() {
+            return null
+          },
+          async updateCurrentStatus() {
+            throw new Error('should not be called')
           },
         },
       })
@@ -218,6 +234,153 @@ describe('Order', () => {
       expect(json).not.toContain('Max Mustermann')
       expect(json).not.toContain('max@example.com')
       expect(json).not.toContain('Reparatur Schuh')
+    })
+  })
+
+  describe('advanceOrder', () => {
+    test('moves order to the next status in the sequence', async () => {
+      const deps = createTestDeps({
+        getStatuses: async () => [
+          { id: 's1', position: 0, name: 'Offen', notify: false },
+          { id: 's2', position: 1, name: 'In Bearbeitung', notify: false },
+          { id: 's3', position: 2, name: 'Fertig', notify: false },
+        ],
+      })
+      const mod = createOrderModule(deps)
+      const order = await mod.createOrder(USER, INPUT)
+
+      const updated = await mod.advanceOrder(USER, order.id)
+
+      expect(updated.currentStatusId).toBe('s2')
+    })
+
+    test('throws when order is already at last status', async () => {
+      const deps = createTestDeps({
+        getStatuses: async () => [
+          { id: 's1', position: 0, name: 'Offen', notify: false },
+          { id: 's2', position: 1, name: 'Fertig', notify: false },
+        ],
+      })
+      const mod = createOrderModule(deps)
+      const order = await mod.createOrder(USER, INPUT)
+      await mod.advanceOrder(USER, order.id)
+
+      await expect(mod.advanceOrder(USER, order.id)).rejects.toThrow('Bereits am letzten Status')
+    })
+
+    test('sends email when advancing into a notify-flagged status', async () => {
+      const sendEmail = vi.fn<OrderDeps['sendStatusUpdateEmail']>().mockResolvedValue(undefined)
+      const deps = createTestDeps({
+        getStatuses: async () => [
+          { id: 's1', position: 0, name: 'Offen', notify: false },
+          { id: 's2', position: 1, name: 'Versendet', notify: true },
+        ],
+        sendStatusUpdateEmail: sendEmail,
+      })
+      const mod = createOrderModule(deps)
+      const order = await mod.createOrder(USER, INPUT)
+
+      await mod.advanceOrder(USER, order.id)
+
+      expect(sendEmail).toHaveBeenCalledWith({
+        customerEmail: 'max@example.com',
+        customerName: 'Max Mustermann',
+        referenceCode: 'ABC123',
+        statusName: 'Versendet',
+      })
+    })
+
+    test('does not send email when advancing into a non-notify status', async () => {
+      const sendEmail = vi.fn<OrderDeps['sendStatusUpdateEmail']>().mockResolvedValue(undefined)
+      const deps = createTestDeps({
+        getStatuses: async () => [
+          { id: 's1', position: 0, name: 'Offen', notify: false },
+          { id: 's2', position: 1, name: 'In Bearbeitung', notify: false },
+        ],
+        sendStatusUpdateEmail: sendEmail,
+      })
+      const mod = createOrderModule(deps)
+      const order = await mod.createOrder(USER, INPUT)
+
+      await mod.advanceOrder(USER, order.id)
+
+      expect(sendEmail).not.toHaveBeenCalled()
+    })
+
+    test('advances to first status when current status was removed from sequence', async () => {
+      const store = createInMemoryOrderStore()
+      await store.insert({
+        userId: USER,
+        customerName: 'Max',
+        customerEmail: 'max@example.com',
+        note: 'test',
+        referenceCode: 'REMOVED',
+        currentStatusId: 'deleted-status',
+      })
+      const deps = createTestDeps({
+        orderStore: store,
+        getStatuses: async () => [
+          { id: 's1', position: 0, name: 'Offen', notify: false },
+          { id: 's2', position: 1, name: 'Fertig', notify: false },
+        ],
+      })
+      const mod = createOrderModule(deps)
+      const orders = await mod.getOrders(USER)
+
+      const updated = await mod.advanceOrder(USER, orders[0]?.id ?? '')
+
+      expect(updated.currentStatusId).toBe('s1')
+    })
+  })
+
+  describe('revertOrder', () => {
+    test('moves order to the previous status in the sequence', async () => {
+      const deps = createTestDeps({
+        getStatuses: async () => [
+          { id: 's1', position: 0, name: 'Offen', notify: false },
+          { id: 's2', position: 1, name: 'In Bearbeitung', notify: false },
+          { id: 's3', position: 2, name: 'Fertig', notify: false },
+        ],
+      })
+      const mod = createOrderModule(deps)
+      const order = await mod.createOrder(USER, INPUT)
+      await mod.advanceOrder(USER, order.id)
+      await mod.advanceOrder(USER, order.id)
+
+      const updated = await mod.revertOrder(USER, order.id)
+
+      expect(updated.currentStatusId).toBe('s2')
+    })
+
+    test('throws when order is already at first status', async () => {
+      const deps = createTestDeps()
+      const mod = createOrderModule(deps)
+      const order = await mod.createOrder(USER, INPUT)
+
+      await expect(mod.revertOrder(USER, order.id)).rejects.toThrow('Bereits am ersten Status')
+    })
+
+    test('sends email when reverting into a notify-flagged status', async () => {
+      const sendEmail = vi.fn<OrderDeps['sendStatusUpdateEmail']>().mockResolvedValue(undefined)
+      const deps = createTestDeps({
+        getStatuses: async () => [
+          { id: 's1', position: 0, name: 'Offen', notify: true },
+          { id: 's2', position: 1, name: 'Fertig', notify: false },
+        ],
+        sendStatusUpdateEmail: sendEmail,
+      })
+      const mod = createOrderModule(deps)
+      const order = await mod.createOrder(USER, INPUT)
+      await mod.advanceOrder(USER, order.id)
+
+      await mod.revertOrder(USER, order.id)
+
+      expect(sendEmail).toHaveBeenCalledWith({
+        customerEmail: 'max@example.com',
+        customerName: 'Max Mustermann',
+        referenceCode: 'ABC123',
+        statusName: 'Offen',
+      })
     })
   })
 

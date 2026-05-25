@@ -33,13 +33,16 @@ export type OrderDeps = {
     customerEmail: string
     customerName: string
     referenceCode: string
+    shopName: string
   }) => Promise<void>
   sendStatusUpdateEmail: (params: {
     customerEmail: string
     customerName: string
     referenceCode: string
     statusName: string
+    shopName: string
   }) => Promise<void>
+  getShopName: (userId: string) => Promise<string>
   generateReferenceCode?: () => string
 }
 
@@ -90,10 +93,12 @@ export function createOrderModule(deps: OrderDeps) {
         currentStatusId: firstStatus.id,
       })
 
+      const shopName = await deps.getShopName(userId)
       await deps.sendOrderCreatedEmail({
         customerEmail: input.customerEmail,
         customerName: input.customerName,
         referenceCode,
+        shopName,
       })
 
       return order
@@ -135,11 +140,13 @@ export function createOrderModule(deps: OrderDeps) {
       const updated = await deps.orderStore.updateCurrentStatus(orderId, nextStatus.id)
 
       if (nextStatus.notify) {
+        const shopName = await deps.getShopName(userId)
         await deps.sendStatusUpdateEmail({
           customerEmail: order.customerEmail,
           customerName: order.customerName,
           referenceCode: order.referenceCode,
           statusName: nextStatus.name,
+          shopName,
         })
       }
 
@@ -161,11 +168,13 @@ export function createOrderModule(deps: OrderDeps) {
       const updated = await deps.orderStore.updateCurrentStatus(orderId, prevStatus.id)
 
       if (prevStatus.notify) {
+        const shopName = await deps.getShopName(userId)
         await deps.sendStatusUpdateEmail({
           customerEmail: order.customerEmail,
           customerName: order.customerName,
           referenceCode: order.referenceCode,
           statusName: prevStatus.name,
+          shopName,
         })
       }
 

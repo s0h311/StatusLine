@@ -7,6 +7,8 @@ import { createStatusSequence } from '../../domain/StatusSequence'
 import { sendMail } from '../../infrastructure/Mail/client'
 import { EMAIL_FOOTER } from '../../infrastructure/Mail/consts'
 import { getBaseUrl } from '../../infrastructure/Utils/getBaseUrl'
+import { eq } from 'drizzle-orm'
+import { user } from '../../infrastructure/Database/schemas/auth'
 
 const orderStore = createDrizzleOrderStore(db)
 const statusStore = createDrizzleStatusStore(db)
@@ -15,16 +17,20 @@ const statusSequence = createStatusSequence(statusStore)
 const orderModule = createOrderModule({
   orderStore,
   getStatuses: (userId) => statusSequence.getStatuses(userId),
-  sendOrderCreatedEmail: async ({ customerEmail, customerName, referenceCode }) => {
+  getShopName: async (userId) => {
+    const result = await db.select({ name: user.name }).from(user).where(eq(user.id, userId))
+    return result[0]?.name ?? 'StatusLine'
+  },
+  sendOrderCreatedEmail: async ({ customerEmail, customerName, referenceCode, shopName }) => {
     const baseUrl = getBaseUrl()
     const statusUrl = `${baseUrl}/status?code=${referenceCode}`
 
     await sendMail({
       recipients: [customerEmail],
-      subject: `Ihr Auftrag – Referenzcode: ${referenceCode}`,
+      subject: `${shopName} – Ihr Auftrag (${referenceCode})`,
       text: `Hallo ${customerName},
 
-Ihr Auftrag wurde erstellt.
+${shopName} hat einen Auftrag für Sie erstellt.
 
 Referenzcode: ${referenceCode}
 
@@ -34,16 +40,16 @@ ${statusUrl}
 ${EMAIL_FOOTER}`,
     })
   },
-  sendStatusUpdateEmail: async ({ customerEmail, customerName, referenceCode, statusName }) => {
+  sendStatusUpdateEmail: async ({ customerEmail, customerName, referenceCode, statusName, shopName }) => {
     const baseUrl = getBaseUrl()
     const statusUrl = `${baseUrl}/status?code=${referenceCode}`
 
     await sendMail({
       recipients: [customerEmail],
-      subject: `Ihr Status wurde aktualisiert – ${referenceCode}`,
+      subject: `${shopName} – Statusupdate (${referenceCode})`,
       text: `Hallo ${customerName},
 
-Ihr Auftrag (${referenceCode}) hat einen neuen Status: ${statusName}
+${shopName} hat den Status Ihres Auftrags (${referenceCode}) aktualisiert: ${statusName}
 
 Den aktuellen Status können Sie jederzeit hier einsehen:
 ${statusUrl}

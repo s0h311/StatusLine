@@ -41,6 +41,7 @@ function createTestDeps(overrides: Partial<OrderDeps> = {}): OrderDeps {
     ],
     sendOrderCreatedEmail: vi.fn<OrderDeps['sendOrderCreatedEmail']>().mockResolvedValue(undefined),
     sendStatusUpdateEmail: vi.fn<OrderDeps['sendStatusUpdateEmail']>().mockResolvedValue(undefined),
+    getShopName: async () => 'Testladen',
     generateReferenceCode: () => 'ABC123',
     ...overrides,
   }
@@ -97,6 +98,7 @@ describe('Order', () => {
         customerEmail: 'max@example.com',
         customerName: 'Max Mustermann',
         referenceCode: 'ABC123',
+        shopName: 'Testladen',
       })
     })
 
@@ -287,6 +289,7 @@ describe('Order', () => {
         customerName: 'Max Mustermann',
         referenceCode: 'ABC123',
         statusName: 'Versendet',
+        shopName: 'Testladen',
       })
     })
 
@@ -380,6 +383,7 @@ describe('Order', () => {
         customerName: 'Max Mustermann',
         referenceCode: 'ABC123',
         statusName: 'Offen',
+        shopName: 'Testladen',
       })
     })
   })

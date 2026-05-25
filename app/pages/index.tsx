@@ -43,19 +43,9 @@ function HomePage() {
     <div className='flex min-h-screen flex-col'>
       <header className='flex items-center justify-between border-b px-6 py-4'>
         <h1 className='text-lg font-bold'>StatusLine</h1>
-        <div className='flex items-center gap-3'>
-          <Link to='/sign-in'>
-            <Button
-              variant='ghost'
-              size='sm'
-            >
-              Geschäftskonto anmelden
-            </Button>
-          </Link>
-          <Link to='/sign-up'>
-            <Button size='sm'>Geschäftskonto erstellen</Button>
-          </Link>
-        </div>
+        <Link to='/sign-in'>
+          <Button size='sm'>Anmelden für Geschäfte</Button>
+        </Link>
       </header>
 
       <div className='flex flex-1 items-center justify-center px-4'>

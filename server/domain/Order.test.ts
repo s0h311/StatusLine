@@ -17,6 +17,9 @@ function createInMemoryOrderStore(): OrderStore {
     async getByUserId(userId) {
       return orders.filter((o) => o.userId === userId)
     },
+    async getByReferenceCode(code) {
+      return orders.find((o) => o.referenceCode === code) ?? null
+    },
   }
 }
 
@@ -126,13 +129,14 @@ describe('Order', () => {
           async getByUserId() {
             return []
           },
+          async getByReferenceCode() {
+            return null
+          },
         },
       })
       const mod = createOrderModule(deps)
 
-      await expect(mod.createOrder(USER, INPUT)).rejects.toThrow(
-        'Referenzcode konnte nicht generiert werden',
-      )
+      await expect(mod.createOrder(USER, INPUT)).rejects.toThrow('Referenzcode konnte nicht generiert werden')
     })
   })
 
@@ -173,6 +177,47 @@ describe('Order', () => {
 
       expect(orders).toHaveLength(1)
       expect(orders[0]?.customerName).toBe('Max Mustermann')
+    })
+  })
+
+  describe('lookupOrderStatus', () => {
+    test('returns status sequence with current position for valid reference code', async () => {
+      const deps = createTestDeps()
+      const mod = createOrderModule(deps)
+
+      await mod.createOrder(USER, INPUT)
+      const result = await mod.lookupOrderStatus('ABC123')
+
+      expect(result).toEqual({
+        statuses: [
+          { name: 'Nicht begonnen', position: 0 },
+          { name: 'Fertig', position: 1 },
+        ],
+        currentStatusName: 'Nicht begonnen',
+        currentPosition: 0,
+      })
+    })
+
+    test('returns null for unknown reference code', async () => {
+      const deps = createTestDeps()
+      const mod = createOrderModule(deps)
+
+      const result = await mod.lookupOrderStatus('NOPE99')
+
+      expect(result).toBeNull()
+    })
+
+    test('does not expose customer data', async () => {
+      const deps = createTestDeps()
+      const mod = createOrderModule(deps)
+
+      await mod.createOrder(USER, INPUT)
+      const result = await mod.lookupOrderStatus('ABC123')
+
+      const json = JSON.stringify(result)
+      expect(json).not.toContain('Max Mustermann')
+      expect(json).not.toContain('max@example.com')
+      expect(json).not.toContain('Reparatur Schuh')
     })
   })
 

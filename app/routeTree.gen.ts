@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './pages/__root'
+import { Route as StatusRouteImport } from './pages/status'
 import { Route as RegistrierenRouteImport } from './pages/registrieren'
 import { Route as DashboardRouteImport } from './pages/dashboard'
 import { Route as AnmeldenRouteImport } from './pages/anmelden'
@@ -17,42 +18,41 @@ import { Route as DashboardIndexRouteImport } from './pages/dashboard/index'
 import { Route as DashboardStatusSequenzRouteImport } from './pages/dashboard/status-sequenz'
 import { Route as DashboardAuftraegeRouteImport } from './pages/dashboard/auftraege'
 
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegistrierenRoute = RegistrierenRouteImport.update({
   id: '/registrieren',
   path: '/registrieren',
   getParentRoute: () => rootRouteImport,
 } as any)
-
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-
 const AnmeldenRoute = AnmeldenRouteImport.update({
   id: '/anmelden',
   path: '/anmelden',
   getParentRoute: () => rootRouteImport,
 } as any)
-
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
-
 const DashboardStatusSequenzRoute = DashboardStatusSequenzRouteImport.update({
   id: '/status-sequenz',
   path: '/status-sequenz',
   getParentRoute: () => DashboardRoute,
 } as any)
-
 const DashboardAuftraegeRoute = DashboardAuftraegeRouteImport.update({
   id: '/auftraege',
   path: '/auftraege',
@@ -64,17 +64,19 @@ export interface FileRoutesByFullPath {
   '/anmelden': typeof AnmeldenRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/registrieren': typeof RegistrierenRoute
-  '/dashboard/': typeof DashboardIndexRoute
+  '/status': typeof StatusRoute
   '/dashboard/auftraege': typeof DashboardAuftraegeRoute
   '/dashboard/status-sequenz': typeof DashboardStatusSequenzRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/anmelden': typeof AnmeldenRoute
   '/registrieren': typeof RegistrierenRoute
-  '/dashboard/': typeof DashboardIndexRoute
+  '/status': typeof StatusRoute
   '/dashboard/auftraege': typeof DashboardAuftraegeRoute
   '/dashboard/status-sequenz': typeof DashboardStatusSequenzRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -82,16 +84,41 @@ export interface FileRoutesById {
   '/anmelden': typeof AnmeldenRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/registrieren': typeof RegistrierenRoute
-  '/dashboard/': typeof DashboardIndexRoute
+  '/status': typeof StatusRoute
   '/dashboard/auftraege': typeof DashboardAuftraegeRoute
   '/dashboard/status-sequenz': typeof DashboardStatusSequenzRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/anmelden' | '/dashboard' | '/registrieren' | '/dashboard/' | '/dashboard/auftraege' | '/dashboard/status-sequenz'
+  fullPaths:
+    | '/'
+    | '/anmelden'
+    | '/dashboard'
+    | '/registrieren'
+    | '/status'
+    | '/dashboard/auftraege'
+    | '/dashboard/status-sequenz'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/anmelden' | '/registrieren' | '/dashboard/' | '/dashboard/auftraege' | '/dashboard/status-sequenz'
-  id: '__root__' | '/' | '/anmelden' | '/dashboard' | '/registrieren' | '/dashboard/' | '/dashboard/auftraege' | '/dashboard/status-sequenz'
+  to:
+    | '/'
+    | '/anmelden'
+    | '/registrieren'
+    | '/status'
+    | '/dashboard/auftraege'
+    | '/dashboard/status-sequenz'
+    | '/dashboard'
+  id:
+    | '__root__'
+    | '/'
+    | '/anmelden'
+    | '/dashboard'
+    | '/registrieren'
+    | '/status'
+    | '/dashboard/auftraege'
+    | '/dashboard/status-sequenz'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -99,43 +126,16 @@ export interface RootRouteChildren {
   AnmeldenRoute: typeof AnmeldenRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   RegistrierenRoute: typeof RegistrierenRoute
+  StatusRoute: typeof StatusRoute
 }
-
-export interface DashboardRouteChildren {
-  DashboardIndexRoute: typeof DashboardIndexRoute
-  DashboardAuftraegeRoute: typeof DashboardAuftraegeRoute
-  DashboardStatusSequenzRoute: typeof DashboardStatusSequenzRoute
-}
-
-const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardIndexRoute: DashboardIndexRoute,
-  DashboardAuftraegeRoute: DashboardAuftraegeRoute,
-  DashboardStatusSequenzRoute: DashboardStatusSequenzRoute,
-}
-
-const DashboardRouteWithChildren = DashboardRoute._addFileChildren(DashboardRouteChildren)
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/anmelden': {
-      id: '/anmelden'
-      path: '/anmelden'
-      fullPath: '/anmelden'
-      preLoaderRoute: typeof AnmeldenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registrieren': {
@@ -145,35 +145,73 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegistrierenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/anmelden': {
+      id: '/anmelden'
+      path: '/anmelden'
+      fullPath: '/anmelden'
+      preLoaderRoute: typeof AnmeldenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof DashboardRouteImport
-    }
-    '/dashboard/auftraege': {
-      id: '/dashboard/auftraege'
-      path: '/auftraege'
-      fullPath: '/dashboard/auftraege'
-      preLoaderRoute: typeof DashboardAuftraegeRouteImport
-      parentRoute: typeof DashboardRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/status-sequenz': {
       id: '/dashboard/status-sequenz'
       path: '/status-sequenz'
       fullPath: '/dashboard/status-sequenz'
       preLoaderRoute: typeof DashboardStatusSequenzRouteImport
-      parentRoute: typeof DashboardRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/auftraege': {
+      id: '/dashboard/auftraege'
+      path: '/auftraege'
+      fullPath: '/dashboard/auftraege'
+      preLoaderRoute: typeof DashboardAuftraegeRouteImport
+      parentRoute: typeof DashboardRoute
     }
   }
 }
+
+interface DashboardRouteChildren {
+  DashboardAuftraegeRoute: typeof DashboardAuftraegeRoute
+  DashboardStatusSequenzRoute: typeof DashboardStatusSequenzRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAuftraegeRoute: DashboardAuftraegeRoute,
+  DashboardStatusSequenzRoute: DashboardStatusSequenzRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnmeldenRoute: AnmeldenRoute,
   DashboardRoute: DashboardRouteWithChildren,
   RegistrierenRoute: RegistrierenRoute,
+  StatusRoute: StatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

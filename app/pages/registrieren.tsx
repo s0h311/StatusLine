@@ -36,50 +36,46 @@ function RegisterPage() {
       return
     }
 
-    void navigate({ to: '/dashboard/' })
+    void navigate({ to: '/dashboard' })
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
+    <div className='flex min-h-screen items-center justify-center px-4'>
+      <Card className='w-full max-w-sm'>
         <CardHeader>
-          <CardTitle className="text-2xl">Registrieren</CardTitle>
-          <CardDescription>
-            Registrierung für Geschäftsinhaber
-          </CardDescription>
+          <CardTitle className='text-2xl'>Registrieren</CardTitle>
+          <CardDescription>Registrierung für Geschäftsinhaber</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="flex flex-col gap-4">
-            {error && (
-              <p className="text-destructive text-sm">{error}</p>
-            )}
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="name">Name</Label>
+          <CardContent className='flex flex-col gap-4'>
+            {error && <p className='text-destructive text-sm'>{error}</p>}
+            <div className='flex flex-col gap-2'>
+              <Label htmlFor='name'>Name</Label>
               <Input
-                id="name"
-                type="text"
+                id='name'
+                type='text'
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Max Mustermann"
+                placeholder='Max Mustermann'
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">E-Mail</Label>
+            <div className='flex flex-col gap-2'>
+              <Label htmlFor='email'>E-Mail</Label>
               <Input
-                id="email"
-                type="email"
+                id='email'
+                type='email'
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@beispiel.de"
+                placeholder='name@beispiel.de'
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Passwort</Label>
+            <div className='flex flex-col gap-2'>
+              <Label htmlFor='password'>Passwort</Label>
               <Input
-                id="password"
-                type="password"
+                id='password'
+                type='password'
                 required
                 minLength={8}
                 value={password}
@@ -87,13 +83,20 @@ function RegisterPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full" disabled={loading}>
+          <CardFooter className='flex flex-col gap-3'>
+            <Button
+              type='submit'
+              className='w-full'
+              disabled={loading}
+            >
               {loading ? 'Wird registriert…' : 'Registrieren'}
             </Button>
-            <p className="text-muted-foreground text-sm">
+            <p className='text-muted-foreground text-sm'>
               Bereits ein Konto?{' '}
-              <Link to="/anmelden" className="text-primary underline underline-offset-4">
+              <Link
+                to='/anmelden'
+                className='text-primary underline underline-offset-4'
+              >
                 Anmelden
               </Link>
             </p>

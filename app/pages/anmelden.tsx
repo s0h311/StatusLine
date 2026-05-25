@@ -34,52 +34,55 @@ function LoginPage() {
       return
     }
 
-    void navigate({ to: '/dashboard/' })
+    void navigate({ to: '/dashboard' })
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
+    <div className='flex min-h-screen items-center justify-center px-4'>
+      <Card className='w-full max-w-sm'>
         <CardHeader>
-          <CardTitle className="text-2xl">Anmelden</CardTitle>
-          <CardDescription>
-            Melde dich mit deiner E-Mail und deinem Passwort an.
-          </CardDescription>
+          <CardTitle className='text-2xl'>Anmelden</CardTitle>
+          <CardDescription>Melde dich mit deiner E-Mail und deinem Passwort an.</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="flex flex-col gap-4">
-            {error && (
-              <p className="text-destructive text-sm">{error}</p>
-            )}
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">E-Mail</Label>
+          <CardContent className='flex flex-col gap-4'>
+            {error && <p className='text-destructive text-sm'>{error}</p>}
+            <div className='flex flex-col gap-2'>
+              <Label htmlFor='email'>E-Mail</Label>
               <Input
-                id="email"
-                type="email"
+                id='email'
+                type='email'
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@beispiel.de"
+                placeholder='name@beispiel.de'
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Passwort</Label>
+            <div className='flex flex-col gap-2'>
+              <Label htmlFor='password'>Passwort</Label>
               <Input
-                id="password"
-                type="password"
+                id='password'
+                type='password'
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full" disabled={loading}>
+          <CardFooter className='flex flex-col gap-3'>
+            <Button
+              type='submit'
+              className='w-full'
+              disabled={loading}
+            >
               {loading ? 'Wird angemeldet…' : 'Anmelden'}
             </Button>
-            <p className="text-muted-foreground text-sm">
+            <p className='text-muted-foreground text-sm'>
               Noch kein Konto?{' '}
-              <Link to="/registrieren" className="text-primary underline underline-offset-4">
+              <Link
+                to='/registrieren'
+                className='text-primary underline underline-offset-4'
+              >
                 Registrieren
               </Link>
             </p>

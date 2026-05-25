@@ -11,10 +11,17 @@ export type Order = {
 
 export type OrderWithStatus = Order & { statusName: string }
 
+export type StatusProgress = {
+  statuses: { name: string; position: number }[]
+  currentStatusName: string
+  currentPosition: number
+}
+
 export type OrderStore = {
   insert(data: Omit<Order, 'id' | 'createdAt'>): Promise<Order>
   existsByReferenceCode(code: string): Promise<boolean>
   getByUserId(userId: string): Promise<Order[]>
+  getByReferenceCode(code: string): Promise<Order | null>
 }
 
 export type OrderDeps = {
@@ -84,11 +91,23 @@ export function createOrderModule(deps: OrderDeps) {
       return order
     },
 
+    async lookupOrderStatus(referenceCode: string): Promise<StatusProgress | null> {
+      const order = await deps.orderStore.getByReferenceCode(referenceCode)
+      if (!order) return null
+
+      const statuses = await deps.getStatuses(order.userId)
+      const sorted = statuses.toSorted((a, b) => a.position - b.position)
+      const current = sorted.find((s) => s.id === order.currentStatusId)
+
+      return {
+        statuses: sorted.map((s) => ({ name: s.name, position: s.position })),
+        currentStatusName: current?.name ?? 'Unbekannt',
+        currentPosition: current?.position ?? -1,
+      }
+    },
+
     async getOrders(userId: string): Promise<OrderWithStatus[]> {
-      const [orders, statuses] = await Promise.all([
-        deps.orderStore.getByUserId(userId),
-        deps.getStatuses(userId),
-      ])
+      const [orders, statuses] = await Promise.all([deps.orderStore.getByUserId(userId), deps.getStatuses(userId)])
       const statusMap = new Map(statuses.map((s) => [s.id, s.name]))
       return orders.map((o) => ({
         ...o,

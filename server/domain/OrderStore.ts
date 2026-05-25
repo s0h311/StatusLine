@@ -7,7 +7,7 @@ export function createDrizzleOrderStore(db: NodePgDatabase): OrderStore {
   return {
     async insert(data) {
       const rows = await db.insert(order).values(data).returning()
-      return rows[0] as typeof rows[number]
+      return rows[0] as (typeof rows)[number]
     },
 
     async existsByReferenceCode(code) {
@@ -17,6 +17,11 @@ export function createDrizzleOrderStore(db: NodePgDatabase): OrderStore {
 
     async getByUserId(userId) {
       return db.select().from(order).where(eq(order.userId, userId))
+    },
+
+    async getByReferenceCode(code) {
+      const rows = await db.select().from(order).where(eq(order.referenceCode, code))
+      return rows[0] ?? null
     },
   }
 }

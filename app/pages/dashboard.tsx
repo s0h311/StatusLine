@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { getSessionAction } from '../../server/api/actions/auth'
 
 export const Route = createFileRoute('/dashboard')({
@@ -9,13 +9,9 @@ export const Route = createFileRoute('/dashboard')({
     }
     return { session }
   },
-  component: DashboardPage,
+  component: DashboardLayout,
 })
 
-function DashboardPage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <h1 className="text-3xl font-semibold">Dashboard</h1>
-    </div>
-  )
+function DashboardLayout() {
+  return <Outlet />
 }

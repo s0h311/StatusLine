@@ -34,7 +34,7 @@ function LoginPage() {
       return
     }
 
-    navigate({ to: '/dashboard' })
+    void navigate({ to: '/dashboard/' })
   }
 
   return (

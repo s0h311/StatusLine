@@ -11,7 +11,7 @@ export function createDrizzleStatusStore(db: NodePgDatabase): StatusStore {
 
     async insert(data) {
       const rows = await db.insert(status).values(data).returning()
-      return rows[0] as typeof rows[number]
+      return rows[0] as (typeof rows)[number]
     },
 
     async update(target: StatusIdentifier, data) {

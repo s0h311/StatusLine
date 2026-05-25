@@ -64,12 +64,8 @@
           "name": "order_user_id_user_id_fk",
           "tableFrom": "order",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -77,12 +73,8 @@
           "name": "order_current_status_id_status_id_fk",
           "tableFrom": "order",
           "tableTo": "status",
-          "columnsFrom": [
-            "current_status_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["current_status_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -92,9 +84,7 @@
         "order_reference_code_unique": {
           "name": "order_reference_code_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "reference_code"
-          ]
+          "columns": ["reference_code"]
         }
       },
       "policies": {},
@@ -143,12 +133,8 @@
           "name": "status_user_id_user_id_fk",
           "tableFrom": "status",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

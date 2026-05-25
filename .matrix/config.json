@@ -2,7 +2,7 @@
   "maxIterations": 20,
   "github": {
     "owner": "s0h311",
-    "repo": "rs-service"
+    "repo": "StatusLine"
   },
   "checks": {
     "strategy": "afterAll",

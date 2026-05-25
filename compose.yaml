@@ -7,11 +7,18 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
       SERVER_HOST: ${SERVER_HOST}
       VITE_BASE_URL: ${VITE_BASE_URL}
+      MAIL_SMTP_HOST: ${MAIL_SMTP_HOST}
+      MAIL_SMTP_USER: ${MAIL_SMTP_USER}
+      MAIL_SMTP_PASSWORD: ${MAIL_SMTP_PASSWORD}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+
     depends_on:
       postgres:
         condition: service_started
     networks:
-      - rs-service-network
+      - status-line-network
   postgres:
     image: postgres:18-alpine3.23
     restart: on-failure
@@ -19,11 +26,11 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - rs-service_postgres_data:/var/lib/postgresql/data
+      - status-line_postgres:/var/lib/postgresql
     networks:
-      - rs-service-network
+      - status-line-network
 
 volumes:
-  rs-service_postgres_data:
+  status-line_postgres:
 networks:
-  rs-service-network:
+  status-line-network:

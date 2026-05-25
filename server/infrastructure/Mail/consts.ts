@@ -1,5 +1,5 @@
 export const EMAIL_FOOTER = `Cheers,
-Team RS-Service
+Team StatusLine
 
 -------------------------------
 

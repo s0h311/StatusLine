@@ -6,7 +6,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - rs-service_postgres_data:/var/lib/postgresql/data
+      - status-line_postgres:/var/lib/postgresql
 
 volumes:
-  rs-service_postgres_data:
+  status-line_postgres:

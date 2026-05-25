@@ -1,0 +1,13 @@
+{
+  "maxIterations": 20,
+  "github": {
+    "owner": "s0h311",
+    "repo": "rs-service"
+  },
+  "checks": {
+    "strategy": "afterAll",
+    "fmtCmd": "pnpm fmt",
+    "lintCmd": "pnpm lint --format json",
+    "testCmd": "pnpm test:unit"
+  }
+}

@@ -9,7 +9,10 @@
     "test": "vitest",
     "lint": "oxlint --fix",
     "fmt": "oxfmt",
-    "gen:auth:schema": "pnpm dlx @better-auth/cli@latest generate --config ./server/infrastructure/Auth/auth.ts --output ./server/infrastructure/Database/schemas/auth.ts"
+    "gen:auth:schema": "pnpm dlx @better-auth/cli@latest generate --config ./server/infrastructure/Auth/auth.ts --output ./server/infrastructure/Database/schemas/auth.ts",
+    "gen:migration": "drizzle-kit generate",
+    "migrate": "node --env-file=.env scripts/migrate.ts",
+    "matrix": "node --env-file .env /Users/soheil/projects/matrix/src/index.ts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.11",

@@ -1,14 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { StatusLookup } from '../components/StatusLookup'
 
-export const Route = createFileRoute('/status')({
+export const Route = createFileRoute('/embed')({
   validateSearch: (search: Record<string, unknown>) => ({
     code: (search.code as string) ?? '',
   }),
-  component: StatusPage,
+  component: EmbedPage,
 })
 
-function StatusPage() {
+function EmbedPage() {
   const { code } = Route.useSearch()
   return <StatusLookup code={code} />
 }

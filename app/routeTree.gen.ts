@@ -9,20 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './pages/__root'
-import { Route as StatusRouteImport } from './pages/status'
 import { Route as SignUpRouteImport } from './pages/sign-up'
 import { Route as SignInRouteImport } from './pages/sign-in'
+import { Route as EmbedRouteImport } from './pages/embed'
 import { Route as DashboardRouteImport } from './pages/dashboard'
 import { Route as IndexRouteImport } from './pages/index'
 import { Route as DashboardIndexRouteImport } from './pages/dashboard/index'
 import { Route as DashboardStatusSequenceRouteImport } from './pages/dashboard/status-sequence'
 import { Route as DashboardOrdersRouteImport } from './pages/dashboard/orders'
 
-const StatusRoute = StatusRouteImport.update({
-  id: '/status',
-  path: '/status',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
@@ -31,6 +26,11 @@ const SignUpRoute = SignUpRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmbedRoute = EmbedRouteImport.update({
+  id: '/embed',
+  path: '/embed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -62,18 +62,18 @@ const DashboardOrdersRoute = DashboardOrdersRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/embed': typeof EmbedRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/status': typeof StatusRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/status-sequence': typeof DashboardStatusSequenceRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/embed': typeof EmbedRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/status': typeof StatusRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/status-sequence': typeof DashboardStatusSequenceRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -82,9 +82,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/embed': typeof EmbedRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/status': typeof StatusRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/status-sequence': typeof DashboardStatusSequenceRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -94,18 +94,18 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/embed'
     | '/sign-in'
     | '/sign-up'
-    | '/status'
     | '/dashboard/orders'
     | '/dashboard/status-sequence'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/embed'
     | '/sign-in'
     | '/sign-up'
-    | '/status'
     | '/dashboard/orders'
     | '/dashboard/status-sequence'
     | '/dashboard'
@@ -113,9 +113,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/embed'
     | '/sign-in'
     | '/sign-up'
-    | '/status'
     | '/dashboard/orders'
     | '/dashboard/status-sequence'
     | '/dashboard/'
@@ -124,20 +124,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  EmbedRoute: typeof EmbedRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
-  StatusRoute: typeof StatusRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/status': {
-      id: '/status'
-      path: '/status'
-      fullPath: '/status'
-      preLoaderRoute: typeof StatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sign-up': {
       id: '/sign-up'
       path: '/sign-up'
@@ -150,6 +143,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embed': {
+      id: '/embed'
+      path: '/embed'
+      fullPath: '/embed'
+      preLoaderRoute: typeof EmbedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -209,9 +209,9 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  EmbedRoute: EmbedRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
-  StatusRoute: StatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

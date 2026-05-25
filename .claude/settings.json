@@ -26,15 +26,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /Users/soheil/projects/rs-service/.claude/hooks/block-npm.sh"
+            "command": "bash /Users/soheil/projects/status-line/.claude/hooks/block-npm.sh"
           },
           {
             "type": "command",
-            "command": "bash /Users/soheil/projects/rs-service/.claude/hooks/block-npx.sh"
+            "command": "bash /Users/soheil/projects/status-line/.claude/hooks/block-npx.sh"
           },
           {
             "type": "command",
-            "command": "bash /Users/soheil/projects/rs-service/.claude/hooks/block-eslint.sh"
+            "command": "bash /Users/soheil/projects/status-line/.claude/hooks/block-eslint.sh"
           }
         ]
       }

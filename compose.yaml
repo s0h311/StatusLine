@@ -11,7 +11,7 @@ services:
       postgres:
         condition: service_started
     networks:
-      - rs-service-network
+      - status-line-network
   postgres:
     image: postgres:18-alpine3.23
     restart: on-failure
@@ -19,11 +19,11 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - rs-service_postgres_data:/var/lib/postgresql/data
+      - status-line_postgres_data:/var/lib/postgresql/data
     networks:
-      - rs-service-network
+      - status-line-network
 
 volumes:
-  rs-service_postgres_data:
+  status-line_postgres_data:
 networks:
-  rs-service-network:
+  status-line-network:

@@ -1,0 +1,197 @@
+import { useState } from 'react'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { lookupStatusAction } from '../../server/api/actions/order'
+
+type StatusLookupProps = {
+  code: string
+  showHeader: boolean
+}
+
+export function StatusLookup({ code, showHeader }: StatusLookupProps) {
+  const navigate = useNavigate()
+  const [input, setInput] = useState(code)
+
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['status-lookup', code],
+    queryFn: () => lookupStatusAction({ data: { referenceCode: code } }),
+    enabled: code.length > 0,
+    retry: false,
+  })
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const trimmed = input.trim().toUpperCase()
+    if (trimmed) {
+      void navigate({ to: '.', search: { code: trimmed } })
+    }
+  }
+
+  function handleBack() {
+    setInput('')
+    void navigate({ to: '.', search: { code: '' } })
+  }
+
+  const showForm = code.length === 0
+
+  return (
+    <div className='flex min-h-screen flex-col'>
+      {showHeader && (
+        <header className='flex items-center justify-between border-b px-6 py-4'>
+          <h1 className='text-lg font-bold'>StatusLine</h1>
+          <Link to='/sign-in'>
+            <Button size='sm'>Anmelden für Geschäfte</Button>
+          </Link>
+        </header>
+      )}
+
+      <div className='flex flex-1 items-center justify-center px-4 py-8'>
+        <div className='w-full max-w-lg space-y-6'>
+          {showForm ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className='text-xl'>Auftragsstatus prüfen</CardTitle>
+                <CardDescription>
+                  Geben Sie Ihren Referenzcode ein, um den aktuellen Status Ihres Auftrags einzusehen.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form
+                  onSubmit={handleSubmit}
+                  className='flex gap-2'
+                >
+                  <div className='flex-1'>
+                    <Label
+                      htmlFor='code'
+                      className='sr-only'
+                    >
+                      Referenzcode
+                    </Label>
+                    <Input
+                      id='code'
+                      placeholder='z.B. ABC123'
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                    />
+                  </div>
+                  <Button type='submit'>Suchen</Button>
+                </form>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {isLoading && <p className='text-muted-foreground text-center text-sm'>Laden...</p>}
+
+              {!isLoading && !result && !error && (
+                <Card>
+                  <CardContent className='py-6'>
+                    <p className='text-destructive text-center text-sm'>
+                      Referenzcode nicht gefunden. Bitte überprüfen Sie Ihre Eingabe.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {error && (
+                <Card>
+                  <CardContent className='py-6'>
+                    <p className='text-destructive text-center text-sm'>
+                      Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {result && (
+                <ProgressBar
+                  statuses={result.statuses}
+                  currentPosition={result.currentPosition}
+                />
+              )}
+
+              {!isLoading && (
+                <div className='flex justify-center'>
+                  <Button
+                    variant='outline'
+                    onClick={handleBack}
+                  >
+                    Zurück
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+type ProgressBarProps = {
+  statuses: { name: string; position: number }[]
+  currentPosition: number
+}
+
+function ProgressBar({ statuses, currentPosition }: ProgressBarProps) {
+  return (
+    <Card>
+      <CardContent className='py-6'>
+        <div className='flex flex-col'>
+          {statuses.map((s, i) => {
+            const isCompleted = s.position < currentPosition
+            const isCurrent = s.position === currentPosition
+
+            return (
+              <div
+                key={s.position}
+                className='flex'
+              >
+                <div className='flex flex-col items-center'>
+                  <div
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold ${
+                      isCurrent
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : isCompleted
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-muted-foreground/30 text-muted-foreground/50'
+                    }`}
+                  >
+                    {isCompleted ? '✓' : i + 1}
+                  </div>
+                  {i < statuses.length - 1 && (
+                    <div
+                      className={`w-0.5 flex-1 ${
+                        s.position < currentPosition ? 'bg-primary' : 'bg-muted-foreground/20'
+                      }`}
+                    />
+                  )}
+                </div>
+                <div className={`ml-3 ${i < statuses.length - 1 ? 'pb-4' : ''}`}>
+                  <div
+                    className={`flex h-8 items-center text-sm ${
+                      isCurrent
+                        ? 'text-primary font-semibold'
+                        : isCompleted
+                          ? 'text-muted-foreground line-through decoration-foreground decoration-2'
+                          : 'opacity-15'
+                    }`}
+                  >
+                    <span>{s.name}</span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

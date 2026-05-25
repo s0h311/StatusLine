@@ -14,6 +14,9 @@ function createInMemoryOrderStore(): OrderStore {
     async existsByReferenceCode(code) {
       return orders.some((o) => o.referenceCode === code)
     },
+    async getByUserId(userId) {
+      return orders.filter((o) => o.userId === userId)
+    },
   }
 }
 
@@ -21,8 +24,8 @@ function createTestDeps(overrides: Partial<OrderDeps> = {}): OrderDeps {
   return {
     orderStore: createInMemoryOrderStore(),
     getStatuses: async () => [
-      { id: 'status-1', position: 0 },
-      { id: 'status-2', position: 1 },
+      { id: 'status-1', position: 0, name: 'Nicht begonnen' },
+      { id: 'status-2', position: 1, name: 'Fertig' },
     ],
     sendOrderCreatedEmail: vi.fn<OrderDeps['sendOrderCreatedEmail']>().mockResolvedValue(undefined),
     generateReferenceCode: () => 'ABC123',
@@ -51,9 +54,9 @@ describe('Order', () => {
     test('order is assigned to the first status in the sequence', async () => {
       const deps = createTestDeps({
         getStatuses: async () => [
-          { id: 'second', position: 1 },
-          { id: 'first', position: 0 },
-          { id: 'third', position: 2 },
+          { id: 'second', position: 1, name: 'In Bearbeitung' },
+          { id: 'first', position: 0, name: 'Nicht begonnen' },
+          { id: 'third', position: 2, name: 'Fertig' },
         ],
       })
       const mod = createOrderModule(deps)
@@ -120,6 +123,9 @@ describe('Order', () => {
           async existsByReferenceCode() {
             return true
           },
+          async getByUserId() {
+            return []
+          },
         },
       })
       const mod = createOrderModule(deps)
@@ -127,6 +133,46 @@ describe('Order', () => {
       await expect(mod.createOrder(USER, INPUT)).rejects.toThrow(
         'Referenzcode konnte nicht generiert werden',
       )
+    })
+  })
+
+  describe('getOrders', () => {
+    test('returns orders with status name attached', async () => {
+      let codeSeq = 0
+      const deps = createTestDeps({ generateReferenceCode: () => `CODE${++codeSeq}` })
+      const mod = createOrderModule(deps)
+
+      await mod.createOrder(USER, INPUT)
+      await mod.createOrder(USER, { ...INPUT, customerName: 'Anna Schmidt', customerEmail: 'anna@example.com' })
+
+      const orders = await mod.getOrders(USER)
+
+      expect(orders).toHaveLength(2)
+      expect(orders[0]?.statusName).toBe('Nicht begonnen')
+      expect(orders[1]?.statusName).toBe('Nicht begonnen')
+    })
+
+    test('returns empty array when user has no orders', async () => {
+      const deps = createTestDeps()
+      const mod = createOrderModule(deps)
+
+      const orders = await mod.getOrders(USER)
+
+      expect(orders).toEqual([])
+    })
+
+    test('only returns orders for the given user', async () => {
+      let codeSeq = 0
+      const deps = createTestDeps({ generateReferenceCode: () => `CODE${++codeSeq}` })
+      const mod = createOrderModule(deps)
+
+      await mod.createOrder(USER, INPUT)
+      await mod.createOrder('other-user', { ...INPUT, customerName: 'Other User' })
+
+      const orders = await mod.getOrders(USER)
+
+      expect(orders).toHaveLength(1)
+      expect(orders[0]?.customerName).toBe('Max Mustermann')
     })
   })
 

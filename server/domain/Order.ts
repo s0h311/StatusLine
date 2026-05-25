@@ -9,14 +9,17 @@ export type Order = {
   createdAt: Date
 }
 
+export type OrderWithStatus = Order & { statusName: string }
+
 export type OrderStore = {
   insert(data: Omit<Order, 'id' | 'createdAt'>): Promise<Order>
   existsByReferenceCode(code: string): Promise<boolean>
+  getByUserId(userId: string): Promise<Order[]>
 }
 
 export type OrderDeps = {
   orderStore: OrderStore
-  getStatuses: (userId: string) => Promise<{ id: string; position: number }[]>
+  getStatuses: (userId: string) => Promise<{ id: string; position: number; name: string }[]>
   sendOrderCreatedEmail: (params: {
     customerEmail: string
     customerName: string
@@ -79,6 +82,18 @@ export function createOrderModule(deps: OrderDeps) {
       })
 
       return order
+    },
+
+    async getOrders(userId: string): Promise<OrderWithStatus[]> {
+      const [orders, statuses] = await Promise.all([
+        deps.orderStore.getByUserId(userId),
+        deps.getStatuses(userId),
+      ])
+      const statusMap = new Map(statuses.map((s) => [s.id, s.name]))
+      return orders.map((o) => ({
+        ...o,
+        statusName: statusMap.get(o.currentStatusId) ?? 'Unbekannt',
+      }))
     },
   }
 }

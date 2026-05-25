@@ -43,6 +43,10 @@ const authMiddleware = createMiddleware({ type: 'request' }).server(async ({ req
   return next({ context: { userId: session.user.id } })
 })
 
+export const getOrdersAction = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(({ context }) => orderModule.getOrders(context.userId))
+
 export const createOrderAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator((data: unknown) => data as { customerName: string; customerEmail: string; note: string })

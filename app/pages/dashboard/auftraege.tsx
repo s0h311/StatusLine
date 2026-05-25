@@ -1,0 +1,91 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card'
+import { Button } from '../../components/ui/button'
+import { getOrdersAction } from '../../../server/api/actions/order'
+import { getStatusesAction } from '../../../server/api/actions/statusSequence'
+
+export const Route = createFileRoute('/dashboard/auftraege')({
+  component: AuftraegePage,
+})
+
+function AuftraegePage() {
+  const [filter, setFilter] = useState<string | null>(null)
+
+  const { data: orders = [], isLoading: ordersLoading } = useQuery({
+    queryKey: ['orders'],
+    queryFn: () => getOrdersAction(),
+  })
+
+  const { data: statuses = [], isLoading: statusesLoading } = useQuery({
+    queryKey: ['statuses'],
+    queryFn: () => getStatusesAction(),
+  })
+
+  if (ordersLoading || statusesLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-muted-foreground">Laden...</p>
+      </div>
+    )
+  }
+
+  const filtered = filter ? orders.filter((o) => o.currentStatusId === filter) : orders
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-8">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Aufträge</CardTitle>
+          <CardDescription>Alle Aufträge Ihres Shops im Überblick.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={filter === null ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter(null)}
+            >
+              Alle
+            </Button>
+            {statuses.map((s) => (
+              <Button
+                key={s.id}
+                variant={filter === s.id ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilter(s.id)}
+              >
+                {s.name}
+              </Button>
+            ))}
+          </div>
+
+          {filtered.length === 0 ? (
+            <p className="text-muted-foreground py-8 text-center text-sm">
+              Keine Aufträge gefunden.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {filtered.map((order) => (
+                <li
+                  key={order.id}
+                  className="bg-muted/50 flex items-center gap-4 rounded-lg border px-4 py-3"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">{order.customerName}</p>
+                    <p className="text-muted-foreground truncate text-xs">{order.note}</p>
+                  </div>
+                  <span className="font-mono text-xs">{order.referenceCode}</span>
+                  <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-medium">
+                    {order.statusName}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

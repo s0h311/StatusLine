@@ -10,10 +10,5 @@ export const Route = createFileRoute('/status')({
 
 function StatusPage() {
   const { code } = Route.useSearch()
-  return (
-    <StatusLookup
-      code={code}
-      showHeader={false}
-    />
-  )
+  return <StatusLookup code={code} />
 }

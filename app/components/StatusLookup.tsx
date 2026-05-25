@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
 import { Button } from './ui/button'
@@ -9,10 +9,9 @@ import { lookupStatusAction } from '../../server/api/actions/order'
 
 type StatusLookupProps = {
   code: string
-  showHeader: boolean
 }
 
-export function StatusLookup({ code, showHeader }: StatusLookupProps) {
+export function StatusLookup({ code }: StatusLookupProps) {
   const navigate = useNavigate()
   const [input, setInput] = useState(code)
 
@@ -43,93 +42,82 @@ export function StatusLookup({ code, showHeader }: StatusLookupProps) {
   const showForm = code.length === 0
 
   return (
-    <div className='flex min-h-screen flex-col'>
-      {showHeader && (
-        <header className='flex items-center justify-between border-b px-6 py-4'>
-          <h1 className='text-lg font-bold'>StatusLine</h1>
-          <Link to='/sign-in'>
-            <Button size='sm'>Anmelden für Geschäfte</Button>
-          </Link>
-        </header>
-      )}
-
-      <div className='flex flex-1 items-center justify-center px-4 py-8'>
-        <div className='w-full max-w-lg space-y-6'>
-          {showForm ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-xl'>Auftragsstatus prüfen</CardTitle>
-                <CardDescription>
-                  Geben Sie Ihren Referenzcode ein, um den aktuellen Status Ihres Auftrags einzusehen.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form
-                  onSubmit={handleSubmit}
-                  className='flex gap-2'
-                >
-                  <div className='flex-1'>
-                    <Label
-                      htmlFor='code'
-                      className='sr-only'
-                    >
-                      Referenzcode
-                    </Label>
-                    <Input
-                      id='code'
-                      placeholder='z.B. ABC123'
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                    />
-                  </div>
-                  <Button type='submit'>Suchen</Button>
-                </form>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              {isLoading && <p className='text-muted-foreground text-center text-sm'>Laden...</p>}
-
-              {!isLoading && !result && !error && (
-                <Card>
-                  <CardContent className='py-6'>
-                    <p className='text-destructive text-center text-sm'>
-                      Referenzcode nicht gefunden. Bitte überprüfen Sie Ihre Eingabe.
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {error && (
-                <Card>
-                  <CardContent className='py-6'>
-                    <p className='text-destructive text-center text-sm'>
-                      Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {result && (
-                <ProgressBar
-                  statuses={result.statuses}
-                  currentPosition={result.currentPosition}
-                />
-              )}
-
-              {!isLoading && (
-                <div className='flex justify-center'>
-                  <Button
-                    variant='outline'
-                    onClick={handleBack}
+    <div className='flex flex-1 items-center justify-center px-4 py-8'>
+      <div className='w-full max-w-lg space-y-6'>
+        {showForm ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className='text-xl'>Auftragsstatus prüfen</CardTitle>
+              <CardDescription>
+                Geben Sie Ihren Referenzcode ein, um den aktuellen Status Ihres Auftrags einzusehen.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form
+                onSubmit={handleSubmit}
+                className='flex gap-2'
+              >
+                <div className='flex-1'>
+                  <Label
+                    htmlFor='code'
+                    className='sr-only'
                   >
-                    Zurück
-                  </Button>
+                    Referenzcode
+                  </Label>
+                  <Input
+                    id='code'
+                    placeholder='z.B. ABC123'
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                  />
                 </div>
-              )}
-            </>
-          )}
-        </div>
+                <Button type='submit'>Suchen</Button>
+              </form>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {isLoading && <p className='text-muted-foreground text-center text-sm'>Laden...</p>}
+
+            {!isLoading && !result && !error && (
+              <Card>
+                <CardContent className='py-6'>
+                  <p className='text-destructive text-center text-sm'>
+                    Referenzcode nicht gefunden. Bitte überprüfen Sie Ihre Eingabe.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {error && (
+              <Card>
+                <CardContent className='py-6'>
+                  <p className='text-destructive text-center text-sm'>
+                    Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {result && (
+              <ProgressBar
+                statuses={result.statuses}
+                currentPosition={result.currentPosition}
+              />
+            )}
+
+            {!isLoading && (
+              <div className='flex justify-center'>
+                <Button
+                  variant='outline'
+                  onClick={handleBack}
+                >
+                  Zurück
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   )

@@ -35,71 +35,69 @@ function DashboardPage() {
   }
 
   return (
-    <div className='mx-auto max-w-2xl px-4 py-8'>
-      <Card>
-        <CardHeader>
-          <CardTitle className='text-xl'>Neuen Auftrag erstellen</CardTitle>
-          <CardDescription>
-            Erstellen Sie einen Auftrag für Ihren Kunden. Der Kunde erhält eine E-Mail mit dem Referenzcode.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <form
-            onSubmit={handleSubmit}
-            className='space-y-4'
+    <Card>
+      <CardHeader>
+        <CardTitle className='text-xl'>Neuen Auftrag erstellen</CardTitle>
+        <CardDescription>
+          Erstellen Sie einen Auftrag für Ihren Kunden. Der Kunde erhält eine E-Mail mit dem Referenzcode.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='space-y-4'>
+        <form
+          onSubmit={handleSubmit}
+          className='space-y-4'
+        >
+          <div className='space-y-2'>
+            <Label htmlFor='customerName'>Kundenname</Label>
+            <Input
+              id='customerName'
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder='Max Mustermann'
+              required
+            />
+          </div>
+          <div className='space-y-2'>
+            <Label htmlFor='customerEmail'>Kunden-E-Mail</Label>
+            <Input
+              id='customerEmail'
+              type='email'
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              placeholder='max@beispiel.de'
+              required
+            />
+          </div>
+          <div className='space-y-2'>
+            <Label htmlFor='note'>Beschreibung</Label>
+            <Input
+              id='note'
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder='Reparatur, Anfertigung, etc.'
+              required
+            />
+          </div>
+          <Button
+            type='submit'
+            disabled={createMutation.isPending || !customerName.trim() || !customerEmail.trim() || !note.trim()}
           >
-            <div className='space-y-2'>
-              <Label htmlFor='customerName'>Kundenname</Label>
-              <Input
-                id='customerName'
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder='Max Mustermann'
-                required
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label htmlFor='customerEmail'>Kunden-E-Mail</Label>
-              <Input
-                id='customerEmail'
-                type='email'
-                value={customerEmail}
-                onChange={(e) => setCustomerEmail(e.target.value)}
-                placeholder='max@beispiel.de'
-                required
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label htmlFor='note'>Beschreibung</Label>
-              <Input
-                id='note'
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder='Reparatur, Anfertigung, etc.'
-                required
-              />
-            </div>
-            <Button
-              type='submit'
-              disabled={createMutation.isPending || !customerName.trim() || !customerEmail.trim() || !note.trim()}
-            >
-              <Plus data-icon='inline-start' />
-              Auftrag erstellen
-            </Button>
-          </form>
+            <Plus data-icon='inline-start' />
+            Auftrag erstellen
+          </Button>
+        </form>
 
-          {createMutation.isError && <p className='text-destructive text-sm'>Fehler: {createMutation.error.message}</p>}
+        {createMutation.isError && <p className='text-destructive text-sm'>Fehler: {createMutation.error.message}</p>}
 
-          {lastCreated && (
-            <div className='bg-muted/50 rounded-lg border p-4'>
-              <p className='text-sm font-medium'>Auftrag erstellt!</p>
-              <p className='text-muted-foreground text-sm'>
-                Referenzcode: <span className='font-mono font-bold'>{lastCreated.referenceCode}</span>
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+        {lastCreated && (
+          <div className='bg-muted/50 rounded-lg border p-4'>
+            <p className='text-sm font-medium'>Auftrag erstellt!</p>
+            <p className='text-muted-foreground text-sm'>
+              Referenzcode: <span className='font-mono font-bold'>{lastCreated.referenceCode}</span>
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

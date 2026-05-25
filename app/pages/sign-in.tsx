@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-export const Route = createFileRoute('/anmelden')({
+export const Route = createFileRoute('/sign-in')({
   component: LoginPage,
 })
 
@@ -80,7 +80,7 @@ function LoginPage() {
             <p className='text-muted-foreground text-sm'>
               Noch kein Konto?{' '}
               <Link
-                to='/registrieren'
+                to='/sign-up'
                 className='text-primary underline underline-offset-4'
               >
                 Registrieren

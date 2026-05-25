@@ -9,33 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './pages/__root'
-import { Route as StatusRouteImport } from './pages/status'
-import { Route as RegistrierenRouteImport } from './pages/registrieren'
+import { Route as SignUpRouteImport } from './pages/sign-up'
+import { Route as SignInRouteImport } from './pages/sign-in'
 import { Route as DashboardRouteImport } from './pages/dashboard'
-import { Route as AnmeldenRouteImport } from './pages/anmelden'
 import { Route as IndexRouteImport } from './pages/index'
 import { Route as DashboardIndexRouteImport } from './pages/dashboard/index'
-import { Route as DashboardStatusSequenzRouteImport } from './pages/dashboard/status-sequenz'
-import { Route as DashboardAuftraegeRouteImport } from './pages/dashboard/auftraege'
+import { Route as DashboardStatusSequenceRouteImport } from './pages/dashboard/status-sequence'
+import { Route as DashboardOrdersRouteImport } from './pages/dashboard/orders'
 
-const StatusRoute = StatusRouteImport.update({
-  id: '/status',
-  path: '/status',
+const SignUpRoute = SignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RegistrierenRoute = RegistrierenRouteImport.update({
-  id: '/registrieren',
-  path: '/registrieren',
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnmeldenRoute = AnmeldenRouteImport.update({
-  id: '/anmelden',
-  path: '/anmelden',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -48,101 +42,94 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardStatusSequenzRoute = DashboardStatusSequenzRouteImport.update({
-  id: '/status-sequenz',
-  path: '/status-sequenz',
+const DashboardStatusSequenceRoute = DashboardStatusSequenceRouteImport.update({
+  id: '/status-sequence',
+  path: '/status-sequence',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardAuftraegeRoute = DashboardAuftraegeRouteImport.update({
-  id: '/auftraege',
-  path: '/auftraege',
+const DashboardOrdersRoute = DashboardOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => DashboardRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/anmelden': typeof AnmeldenRoute
   '/dashboard': typeof DashboardRouteWithChildren
-  '/registrieren': typeof RegistrierenRoute
-  '/status': typeof StatusRoute
-  '/dashboard/auftraege': typeof DashboardAuftraegeRoute
-  '/dashboard/status-sequenz': typeof DashboardStatusSequenzRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/dashboard/orders': typeof DashboardOrdersRoute
+  '/dashboard/status-sequence': typeof DashboardStatusSequenceRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/anmelden': typeof AnmeldenRoute
-  '/registrieren': typeof RegistrierenRoute
-  '/status': typeof StatusRoute
-  '/dashboard/auftraege': typeof DashboardAuftraegeRoute
-  '/dashboard/status-sequenz': typeof DashboardStatusSequenzRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/dashboard/orders': typeof DashboardOrdersRoute
+  '/dashboard/status-sequence': typeof DashboardStatusSequenceRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/anmelden': typeof AnmeldenRoute
   '/dashboard': typeof DashboardRouteWithChildren
-  '/registrieren': typeof RegistrierenRoute
-  '/status': typeof StatusRoute
-  '/dashboard/auftraege': typeof DashboardAuftraegeRoute
-  '/dashboard/status-sequenz': typeof DashboardStatusSequenzRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/dashboard/orders': typeof DashboardOrdersRoute
+  '/dashboard/status-sequence': typeof DashboardStatusSequenceRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/anmelden'
     | '/dashboard'
-    | '/registrieren'
-    | '/status'
-    | '/dashboard/auftraege'
-    | '/dashboard/status-sequenz'
+    | '/sign-in'
+    | '/sign-up'
+    | '/dashboard/orders'
+    | '/dashboard/status-sequence'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/anmelden'
-    | '/registrieren'
-    | '/status'
-    | '/dashboard/auftraege'
-    | '/dashboard/status-sequenz'
+    | '/sign-in'
+    | '/sign-up'
+    | '/dashboard/orders'
+    | '/dashboard/status-sequence'
     | '/dashboard'
   id:
     | '__root__'
     | '/'
-    | '/anmelden'
     | '/dashboard'
-    | '/registrieren'
-    | '/status'
-    | '/dashboard/auftraege'
-    | '/dashboard/status-sequenz'
+    | '/sign-in'
+    | '/sign-up'
+    | '/dashboard/orders'
+    | '/dashboard/status-sequence'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AnmeldenRoute: typeof AnmeldenRoute
   DashboardRoute: typeof DashboardRouteWithChildren
-  RegistrierenRoute: typeof RegistrierenRoute
-  StatusRoute: typeof StatusRoute
+  SignInRoute: typeof SignInRoute
+  SignUpRoute: typeof SignUpRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/status': {
-      id: '/status'
-      path: '/status'
-      fullPath: '/status'
-      preLoaderRoute: typeof StatusRouteImport
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/registrieren': {
-      id: '/registrieren'
-      path: '/registrieren'
-      fullPath: '/registrieren'
-      preLoaderRoute: typeof RegistrierenRouteImport
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -150,13 +137,6 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/anmelden': {
-      id: '/anmelden'
-      path: '/anmelden'
-      fullPath: '/anmelden'
-      preLoaderRoute: typeof AnmeldenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -173,32 +153,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/status-sequenz': {
-      id: '/dashboard/status-sequenz'
-      path: '/status-sequenz'
-      fullPath: '/dashboard/status-sequenz'
-      preLoaderRoute: typeof DashboardStatusSequenzRouteImport
+    '/dashboard/status-sequence': {
+      id: '/dashboard/status-sequence'
+      path: '/status-sequence'
+      fullPath: '/dashboard/status-sequence'
+      preLoaderRoute: typeof DashboardStatusSequenceRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/auftraege': {
-      id: '/dashboard/auftraege'
-      path: '/auftraege'
-      fullPath: '/dashboard/auftraege'
-      preLoaderRoute: typeof DashboardAuftraegeRouteImport
+    '/dashboard/orders': {
+      id: '/dashboard/orders'
+      path: '/orders'
+      fullPath: '/dashboard/orders'
+      preLoaderRoute: typeof DashboardOrdersRouteImport
       parentRoute: typeof DashboardRoute
     }
   }
 }
 
 interface DashboardRouteChildren {
-  DashboardAuftraegeRoute: typeof DashboardAuftraegeRoute
-  DashboardStatusSequenzRoute: typeof DashboardStatusSequenzRoute
+  DashboardOrdersRoute: typeof DashboardOrdersRoute
+  DashboardStatusSequenceRoute: typeof DashboardStatusSequenceRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardAuftraegeRoute: DashboardAuftraegeRoute,
-  DashboardStatusSequenzRoute: DashboardStatusSequenzRoute,
+  DashboardOrdersRoute: DashboardOrdersRoute,
+  DashboardStatusSequenceRoute: DashboardStatusSequenceRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -208,10 +188,9 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AnmeldenRoute: AnmeldenRoute,
   DashboardRoute: DashboardRouteWithChildren,
-  RegistrierenRoute: RegistrierenRoute,
-  StatusRoute: StatusRoute,
+  SignInRoute: SignInRoute,
+  SignUpRoute: SignUpRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

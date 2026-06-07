@@ -15,6 +15,7 @@ import { Route as EmbedRouteImport } from './pages/embed'
 import { Route as DashboardRouteImport } from './pages/dashboard'
 import { Route as IndexRouteImport } from './pages/index'
 import { Route as DashboardIndexRouteImport } from './pages/dashboard/index'
+import { Route as LegalPrivacyRouteImport } from './pages/legal/privacy'
 import { Route as DashboardStatusSequenceRouteImport } from './pages/dashboard/status-sequence'
 import { Route as DashboardOrdersRouteImport } from './pages/dashboard/orders'
 
@@ -48,6 +49,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/legal/privacy',
+  path: '/legal/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardStatusSequenceRoute = DashboardStatusSequenceRouteImport.update({
   id: '/status-sequence',
   path: '/status-sequence',
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof SignUpRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/status-sequence': typeof DashboardStatusSequenceRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/status-sequence': typeof DashboardStatusSequenceRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/status-sequence': typeof DashboardStatusSequenceRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard/orders'
     | '/dashboard/status-sequence'
+    | '/legal/privacy'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard/orders'
     | '/dashboard/status-sequence'
+    | '/legal/privacy'
     | '/dashboard'
   id:
     | '__root__'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard/orders'
     | '/dashboard/status-sequence'
+    | '/legal/privacy'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   EmbedRoute: typeof EmbedRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -173,6 +186,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/legal/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/status-sequence': {
       id: '/dashboard/status-sequence'
       path: '/status-sequence'
@@ -212,6 +232,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmbedRoute: EmbedRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  LegalPrivacyRoute: LegalPrivacyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

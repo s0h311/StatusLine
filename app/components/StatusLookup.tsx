@@ -44,14 +44,14 @@ export function StatusLookup({ code }: StatusLookupProps) {
   return (
     <div className='space-y-6'>
       {showForm ? (
-        <Card>
-          <CardHeader>
+        <Card className='border-0 py-0 shadow-none'>
+          <CardHeader className='px-0'>
             <CardTitle className='text-xl'>Auftragsstatus prüfen</CardTitle>
             <CardDescription>
               Geben Sie Ihren Referenzcode ein, um den aktuellen Status Ihres Auftrags einzusehen.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className='px-0'>
             <form
               onSubmit={handleSubmit}
               className='flex gap-2'
@@ -128,8 +128,8 @@ type ProgressBarProps = {
 
 function ProgressBar({ statuses, currentPosition }: ProgressBarProps) {
   return (
-    <Card>
-      <CardContent className='py-6'>
+    <Card className='border-0 py-0 shadow-none'>
+      <CardContent className='p-0'>
         <div className='flex flex-col'>
           {statuses.map((s, i) => {
             const isCompleted = s.position < currentPosition

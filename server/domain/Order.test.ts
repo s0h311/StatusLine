@@ -29,6 +29,10 @@ function createInMemoryOrderStore(): OrderStore {
       order.currentStatusId = currentStatusId
       return order
     },
+    async remove(id) {
+      const index = orders.findIndex((o) => o.id === id)
+      if (index !== -1) orders.splice(index, 1)
+    },
   }
 }
 
@@ -148,6 +152,9 @@ describe('Order', () => {
             return null
           },
           async updateCurrentStatus() {
+            throw new Error('should not be called')
+          },
+          async remove() {
             throw new Error('should not be called')
           },
         },
@@ -385,6 +392,34 @@ describe('Order', () => {
         statusName: 'Offen',
         shopName: 'Testladen',
       })
+    })
+  })
+
+  describe('deleteOrder', () => {
+    test('removes the order', async () => {
+      const deps = createTestDeps()
+      const mod = createOrderModule(deps)
+      const order = await mod.createOrder(USER, INPUT)
+
+      await mod.deleteOrder(USER, order.id)
+
+      const orders = await mod.getOrders(USER)
+      expect(orders).toHaveLength(0)
+    })
+
+    test('throws when order does not exist', async () => {
+      const deps = createTestDeps()
+      const mod = createOrderModule(deps)
+
+      await expect(mod.deleteOrder(USER, 'missing')).rejects.toThrow('Auftrag nicht gefunden')
+    })
+
+    test('throws when order belongs to another user', async () => {
+      const deps = createTestDeps()
+      const mod = createOrderModule(deps)
+      const order = await mod.createOrder(USER, INPUT)
+
+      await expect(mod.deleteOrder('other-user', order.id)).rejects.toThrow('Auftrag nicht gefunden')
     })
   })
 

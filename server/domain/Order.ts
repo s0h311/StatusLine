@@ -24,6 +24,7 @@ export type OrderStore = {
   getByReferenceCode(code: string): Promise<Order | null>
   getById(id: string): Promise<Order | null>
   updateCurrentStatus(id: string, currentStatusId: string): Promise<Order>
+  remove(id: string): Promise<void>
 }
 
 export type OrderDeps = {
@@ -179,6 +180,13 @@ export function createOrderModule(deps: OrderDeps) {
       }
 
       return updated
+    },
+
+    async deleteOrder(userId: string, orderId: string): Promise<void> {
+      const order = await deps.orderStore.getById(orderId)
+      if (!order || order.userId !== userId) throw new Error('Auftrag nicht gefunden')
+
+      await deps.orderStore.remove(orderId)
     },
 
     async getOrders(userId: string): Promise<OrderWithStatus[]> {

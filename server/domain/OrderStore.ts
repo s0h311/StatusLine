@@ -33,5 +33,9 @@ export function createDrizzleOrderStore(db: NodePgDatabase): OrderStore {
       const rows = await db.update(order).set({ currentStatusId }).where(eq(order.id, id)).returning()
       return rows[0] as (typeof rows)[number]
     },
+
+    async remove(id) {
+      await db.delete(order).where(eq(order.id, id))
+    },
   }
 }

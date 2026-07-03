@@ -88,3 +88,8 @@ export const revertOrderAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator((data: unknown) => data as { orderId: string })
   .handler(({ context, data }) => orderModule.revertOrder(context.userId, data.orderId))
+
+export const deleteOrderAction = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator((data: unknown) => data as { orderId: string })
+  .handler(({ context, data }) => orderModule.deleteOrder(context.userId, data.orderId))

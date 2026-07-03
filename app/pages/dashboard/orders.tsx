@@ -1,10 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { ChevronRight, ChevronLeft } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
-import { getOrdersAction, advanceOrderAction, revertOrderAction } from '../../../server/api/actions/order'
+import {
+  getOrdersAction,
+  advanceOrderAction,
+  revertOrderAction,
+  deleteOrderAction,
+} from '../../../server/api/actions/order'
 import { getStatusesAction } from '../../../server/api/actions/statusSequence'
 
 export const Route = createFileRoute('/dashboard/orders')({
@@ -32,6 +37,11 @@ function OrdersPage() {
 
   const revert = useMutation({
     mutationFn: (orderId: string) => revertOrderAction({ data: { orderId } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+  })
+
+  const deleteOrder = useMutation({
+    mutationFn: (orderId: string) => deleteOrderAction({ data: { orderId } }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
   })
 
@@ -116,6 +126,19 @@ function OrdersPage() {
                       title='Vorrücken'
                     >
                       <ChevronRight className='h-4 w-4' />
+                    </Button>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      className='text-destructive hover:text-destructive h-7 w-7'
+                      onClick={() => {
+                        if (confirm(`Auftrag von ${order.customerName} (${order.referenceCode}) wirklich löschen?`)) {
+                          deleteOrder.mutate(order.id)
+                        }
+                      }}
+                      title='Löschen'
+                    >
+                      <Trash2 className='h-4 w-4' />
                     </Button>
                   </div>
                 </li>

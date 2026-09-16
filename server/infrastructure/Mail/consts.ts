@@ -4,10 +4,11 @@ Team StatusLine
 -------------------------------
 
 Rock Science
-Inhaber: Soheil Nazari
+Inhaber: Liam Funk
 Oldachstr. 8
-22147 Hamburg
+22307 Hamburg
 DE
 
 E-Mail: hello@rock-science.com
-Telefon: +49 176 42946108`
+Telefon: +49 151 6271 2892
+`

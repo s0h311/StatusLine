@@ -25,7 +25,7 @@ function LegalPrivacyPage() {
       <h2>1. Verantwortlicher</h2>
 
       <p>
-        Rock Science (Inhaber: Soheil Nazari)
+        Rock Science (Inhaber: Liam Funk)
         <br />
         Oldachstr. 8
         <br />
@@ -33,7 +33,7 @@ function LegalPrivacyPage() {
         <br />
         E-Mail: hello@rock-science.com
         <br />
-        Telefon: 0176 42946108
+        Telefon: +49 151 6271 2892
       </p>
 
       <p>Ein Datenschutzbeauftragter ist nicht bestellt, da die gesetzlichen Voraussetzungen nicht vorliegen.</p>

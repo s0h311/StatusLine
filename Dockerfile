@@ -1,8 +1,8 @@
-FROM node:24-alpine3.23
+FROM node:26-alpine3.26
 
 WORKDIR /app
 
-RUN corepack enable
+RUN npm i -g pnpm@latest
 
 COPY package.json .
 COPY pnpm-lock.yaml .
